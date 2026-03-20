@@ -1,0 +1,23 @@
+# API Keys und Secrets
+mail/
+*.txt
+*.key
+.env
+.env.local
+
+# Node modules
+node_modules/
+backend/node_modules/
+mail/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Alte Backups
+backend/server_old.js
+backend/server_v1.js
+
+# OS Files
+.DS_Store
+Thumbs.db
