@@ -438,7 +438,65 @@ app.post('/chat', async (req, res) => {
             }
         }
         
-        // 8.5 WARCRAFT LOGS: Wipe-Analyse (Report-Code + Fight)
+        // 8.5 WARCRAFT LOGS: Todesanalyse "Worauf sterbe ich?"
+        else if ((lowerMsg.includes('worauf sterbe') || lowerMsg.includes('woran sind') || 
+                  lowerMsg.includes('todesursache') || lowerMsg.includes('deaths')) &&
+                 message.match(/[a-zA-Z0-9]{16}/)) {
+            
+            const codeMatch = message.match(/([a-zA-Z0-9]{16})/);
+            const fightMatch = message.match(/fight=(\d+)/);
+            
+            if (codeMatch) {
+                const reportCode = codeMatch[1];
+                const fightId = fightMatch ? parseInt(fightMatch[1]) : 1;
+                
+                // Spielername extrahieren (optional)
+                let playerName = null;
+                const nameMatch = message.match(/(?:spieler|char|ich|name)\s+(\w+)/i);
+                if (nameMatch) {
+                    playerName = nameMatch[1];
+                }
+                
+                console.log(`[WCL] Analysiere Todesursachen: ${reportCode}, Fight ${fightId}`);
+                const deathData = await wcl.analyzeDeaths(reportCode, fightId, playerName);
+                
+                if (!deathData.error) {
+                    if (playerName) {
+                        contextData = `\n\n💀 TODESANALYSE für ${deathData.player} - ${deathData.bossName}:\n`;
+                        contextData += `Anzahl Tode: ${deathData.deathCount}\n\n`;
+                        
+                        if (deathData.deathCount > 0) {
+                            contextData += `Todesursachen:\n`;
+                            deathData.deaths.forEach((d, i) => {
+                                contextData += `  ${i + 1}. ${d.ability} (von: ${d.killer})\n`;
+                            });
+                        } else {
+                            contextData += `✅ ${deathData.player} ist nicht gestorben!\n`;
+                        }
+                    } else {
+                        contextData = `\n\n💀 TODESANALYSE - ${deathData.bossName}:\n`;
+                        contextData += `Gesamte Tode: ${deathData.totalDeaths}\n\n`;
+                        
+                        if (deathData.topDeathCauses.length > 0) {
+                            contextData += `🔴 Häufigste Todesursachen:\n`;
+                            deathData.topDeathCauses.forEach((c, i) => {
+                                contextData += `  ${i + 1}. ${c.ability}\n`;
+                                contextData += `     Betroffen: ${c.victims.join(', ')}\n`;
+                            });
+                        }
+                        
+                        contextData += `\n💡 Tipp: Prüft eure Positionierung und defensive Cooldowns für diese Mechaniken!`;
+                    }
+                    
+                    contextData += `\n\n🔗 Link: https://www.warcraftlogs.com/reports/${reportCode}#fight=${fightId}`;
+                } else {
+                    contextData = `\n\n(WCL Fehler: ${deathData.error})`;
+                }
+                toolUsed = true;
+            }
+        }
+
+        // 8.6 WARCRAFT LOGS: Wipe-Analyse (Report-Code + Fight)
         else if (message.match(/[a-zA-Z0-9]{16}\?fight=\d+/) || 
                  (message.match(/[a-zA-Z0-9]{16}/) && lowerMsg.includes('wipe'))) {
             const codeMatch = message.match(/([a-zA-Z0-9]{16})/);

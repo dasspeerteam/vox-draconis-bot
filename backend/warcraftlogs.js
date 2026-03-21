@@ -390,6 +390,85 @@ async function analyzeWipe(reportCode, fightId) {
     return result;
 }
 
+/**
+ * Analyse: Woran ist ein Spieler gestorben?
+ */
+async function analyzeDeaths(reportCode, fightId, playerName = null) {
+    const analysis = await getFightAnalysis(reportCode, fightId);
+    
+    if (analysis.error) {
+        return analysis;
+    }
+    
+    const report = analysis?.reportData?.report;
+    if (!report) {
+        return { error: 'Report nicht gefunden' };
+    }
+    
+    const fight = report.fights?.find(f => f.id === fightId);
+    if (!fight) {
+        return { error: `Fight ${fightId} nicht gefunden` };
+    }
+    
+    const deaths = report.deaths?.data || [];
+    
+    // Wenn kein Spielername angegeben, zeige alle Tode
+    if (!playerName) {
+        // Todesursachen gruppieren
+        const deathCauses = {};
+        deaths.forEach(d => {
+            const ability = d.ability?.name || 'Unbekannt';
+            const killer = d.source?.name || 'Umgebung';
+            const key = `${ability} (${killer})`;
+            
+            if (!deathCauses[key]) {
+                deathCauses[key] = {
+                    ability: ability,
+                    killer: killer,
+                    victims: [],
+                    count: 0
+                };
+            }
+            deathCauses[key].victims.push(d.target?.name);
+            deathCauses[key].count++;
+        });
+        
+        // Nach Häufigkeit sortieren
+        const sortedCauses = Object.values(deathCauses)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+        
+        return {
+            bossName: fight.name,
+            isKill: fight.kill,
+            totalDeaths: deaths.length,
+            topDeathCauses: sortedCauses,
+            allDeaths: deaths.slice(0, 10).map(d => ({
+                player: d.target?.name,
+                ability: d.ability?.name,
+                killer: d.source?.name,
+                timestamp: d.timestamp
+            }))
+        };
+    }
+    
+    // Spezifischer Spieler
+    const playerDeaths = deaths.filter(d => 
+        d.target?.name?.toLowerCase() === playerName.toLowerCase()
+    );
+    
+    return {
+        bossName: fight.name,
+        player: playerName,
+        deathCount: playerDeaths.length,
+        deaths: playerDeaths.map(d => ({
+            ability: d.ability?.name || 'Unbekannt',
+            killer: d.source?.name || 'Umgebung',
+            timestamp: d.timestamp
+        }))
+    };
+}
+
 module.exports = {
     getBossRankings,
     getGuildReports,
@@ -397,6 +476,7 @@ module.exports = {
     analyzeBossTactics,
     getGuildPerformance,
     analyzeWipe,
+    analyzeDeaths,
     ZONES,
     BOSSES
 };
