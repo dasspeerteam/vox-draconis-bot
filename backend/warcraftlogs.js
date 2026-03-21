@@ -194,7 +194,7 @@ async function getFightAnalysis(reportCode, fightId) {
                 }
                 table(fightIDs: [${fightId}], dataType: Summary)
                 damageDone: table(fightIDs: [${fightId}], dataType: DamageDone)
-                healingDone: table(fightIDs: [${fightId}], dataType: HealingDone)
+                healingDone: table(fightIDs: [${fightId}], dataType: Healing)
                 deaths: events(fightIDs: [${fightId}], dataType: Deaths, limit: 20) {
                     data
                 }
