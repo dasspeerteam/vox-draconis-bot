@@ -55,7 +55,7 @@ async function getBlizzardToken() {
 /**
  * Holt das Gilden-Roster (ALLE Mitglieder)
  */
-async function getGuildRoster(realm = 'alexstrasza', guild = 'Vox%20Draconis') {
+async function getGuildRoster(realm = 'Alexstrasza', guild = 'Vox Draconis') {
     // Cache prüfen
     if (rosterCache && rosterCacheTime && (Date.now() - rosterCacheTime < CACHE_DURATION)) {
         console.log('[Blizzard] Verwende cached Roster');
@@ -68,12 +68,14 @@ async function getGuildRoster(realm = 'alexstrasza', guild = 'Vox%20Draconis') {
     }
 
     try {
-        // URL kodiert: Leerzeichen = %20
-        const encodedGuild = encodeURIComponent(guild);
-        const url = `${BLIZZARD_API_URL}/data/wow/guild/${realm}/${encodedGuild}/roster`;
+        // Blizzard API verwendet slug-Format: kleinbuchstaben, Bindestriche statt Leerzeichen
+        const realmSlug = realm.toLowerCase().replace(/\s+/g, '-');
+        const guildSlug = guild.toLowerCase().replace(/\s+/g, '-');
+        const url = `${BLIZZARD_API_URL}/data/wow/guild/${realmSlug}/${guildSlug}/roster`;
         
         console.log('[Blizzard] Rufe Gilden-Roster ab...');
         console.log('[Blizzard] URL:', url);
+        console.log('[Blizzard] Realm:', realmSlug, '| Guild:', guildSlug);
         const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
