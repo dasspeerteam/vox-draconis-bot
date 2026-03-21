@@ -438,7 +438,20 @@ app.post('/chat', async (req, res) => {
             }
         }
         
-        // 9. WARCRAFT LOGS: Gilde-Performance
+        // 9. WARCRAFT LOGS: Letzter Raid / Neuster Report
+        else if (lowerMsg.includes('letzter raid') || lowerMsg.includes('neuester report') || 
+                 lowerMsg.includes('letzter report') || lowerMsg.includes('aktueller raid') ||
+                 lowerMsg.includes('letztes log') || lowerMsg.includes('neuestes log')) {
+            
+            contextData = '\n\n📅 LETZTER RAID:\n';
+            contextData += 'Hier siehst du alle aktuellen Raids:\n';
+            contextData += 'https://www.warcraftlogs.com/guild/calendar/802185\n\n';
+            contextData += '📊 Der neueste Raid ist ganz oben in der Liste.\n';
+            contextData += '💡 Tipp: Kopiere den Report-Code (16 Zeichen) und gib ihn mir, dann erstelle ich einen Direktlink!';
+            toolUsed = true;
+        }
+
+        // 10. WARCRAFT LOGS: Gilde-Performance (allgemein)
         else if (lowerMsg.includes('logs') || lowerMsg.includes('report') || 
                  lowerMsg.includes('letzte kills') || lowerMsg.includes('raid-fortschritt')) {
             
