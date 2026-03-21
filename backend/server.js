@@ -488,7 +488,24 @@ app.get('/', (req, res) => {
     res.send('Vox Draconis Bot läuft! v3.5 (Warcraft Logs + Raider.io)');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server auf Port ${PORT}`);
+// Debug: WCL Status
+app.get('/debug/wcl', async (req, res) => {
+    const wcl = require('./warcraftlogs');
+    const reports = await wcl.getGuildReports(3);
+    res.json({
+        wcl_client_id_set: !!process.env.WCL_CLIENT_ID,
+        wcl_client_secret_set: !!process.env.WCL_CLIENT_SECRET,
+        reports: reports
+    });
 });
+
+// Export für Vercel
+module.exports = app;
+
+// Lokale Entwicklung
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server auf Port ${PORT}`);
+    });
+}
