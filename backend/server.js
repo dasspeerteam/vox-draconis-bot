@@ -669,7 +669,7 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
 
-        // 11. JSON-DATEI: Spitznamen & Gilden-Wissen (lokale Datei - funktioniert!)
+        // 11. JSON-DATEI: Flexibles Gilden-Wissen (lokale Datei)
         try {
             const fs = require('fs');
             const path = require('path');
@@ -680,36 +680,39 @@ app.post('/chat', async (req, res) => {
                 
                 // Prüfe ob nach einem bestimmten Spieler gefragt wurde
                 if (guildData.mitglieder) {
-                    for (const member of guildData.mitglieder) {
-                        if (member.name && lowerMsg.includes(member.name.toLowerCase())) {
-                            contextData += `\n\n👤 ${member.name}:\n`;
-                            if (member.spitzname) contextData += `Spitzname: "${member.spitzname}"\n`;
-                            if (member.rolle) contextData += `Rolle: ${member.rolle}\n`;
-                            if (member.klasse) contextData += `Klasse: ${member.klasse}\n`;
-                            if (member.notiz) contextData += `Info: ${member.notiz}\n`;
+                    // Suche nach dem Namen in der Nachricht
+                    for (const [name, data] of Object.entries(guildData.mitglieder)) {
+                        if (lowerMsg.includes(name.toLowerCase())) {
+                            contextData += `\n\n👤 ${name}:\n`;
+                            
+                            // Zeige ALLE Infos aus der JSON (flexibel!)
+                            for (const [key, value] of Object.entries(data)) {
+                                // Erste Buchstabe groß machen
+                                const label = key.charAt(0).toUpperCase() + key.slice(1);
+                                contextData += `• ${label}: ${value}\n`;
+                            }
+                            
                             toolUsed = true;
                             break;
                         }
                     }
                 }
                 
-                // Füge generelles Gilden-Wissen hinzu
-                if (lowerMsg.includes('spitzname') || lowerMsg.includes('regel') || 
-                    lowerMsg.includes('wer ist') || lowerMsg.includes('was ist') ||
-                    lowerMsg.includes('aktuell') || lowerMsg.includes('neu') ||
-                    lowerMsg.includes('wissen') || lowerMsg.includes('info')) {
-                    
-                    if (guildData.wissen && guildData.wissen.length > 0) {
-                        contextData += '\n\n📋 GILDEN-WISSEN:\n';
-                        guildData.wissen.forEach(item => {
-                            contextData += `• ${item.kategorie}: ${item.info}`;
-                            if (item.datum && item.datum !== 'permanent') {
-                                contextData += ` (${item.datum})`;
-                            }
-                            contextData += '\n';
-                        });
-                        toolUsed = true;
+                // Allgemeine Infos (Regeln, Raidzeiten, etc.)
+                if (guildData.allgemeines && (
+                    lowerMsg.includes('regel') || 
+                    lowerMsg.includes('raidzeit') ||
+                    lowerMsg.includes('discord') ||
+                    lowerMsg.includes('aktuell') ||
+                    lowerMsg.includes('wissen') ||
+                    lowerMsg.includes('info')
+                )) {
+                    contextData += '\n\n📋 GILDEN-INFO:\n';
+                    for (const [key, value] of Object.entries(guildData.allgemeines)) {
+                        const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        contextData += `• ${label}: ${value}\n`;
                     }
+                    toolUsed = true;
                 }
             }
         } catch (error) {
