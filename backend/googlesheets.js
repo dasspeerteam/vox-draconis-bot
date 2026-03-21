@@ -28,16 +28,9 @@ async function getSheetData(sheetId, sheetName = 'Sheet1') {
     try {
         let url;
         
-        // Prüfe ob es ein "Published to web" ID ist (länger und enthält Bindestriche)
-        if (sheetId.length > 40 && sheetId.includes('-')) {
-            // Published to web Format
-            url = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
-            console.log('[GoogleSheets] Verwende Published-to-Web Format');
-        } else {
-            // Normales Format
-            url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-            console.log('[GoogleSheets] Verwende Standard Format');
-        }
+        // Google Sheets API (gviz) für "Anyone with the link can view"
+        url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        console.log('[GoogleSheets] Verwende Standard Format');
         
         console.log('[GoogleSheets] Lade Daten...');
         const response = await fetch(url, { timeout: 5000 });
