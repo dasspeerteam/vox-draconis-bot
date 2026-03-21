@@ -73,6 +73,7 @@ async function getGuildRoster(realm = 'alexstrasza', guild = 'Vox%20Draconis') {
         const url = `${BLIZZARD_API_URL}/data/wow/guild/${realm}/${encodedGuild}/roster`;
         
         console.log('[Blizzard] Rufe Gilden-Roster ab...');
+        console.log('[Blizzard] URL:', url);
         const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
