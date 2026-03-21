@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const wcl = require('./warcraftlogs');
+const blizzard = require('./blizzard');
 
 const app = express();
 app.use(cors());
@@ -674,6 +675,22 @@ app.get('/debug/fight/:code/:fightId', async (req, res) => {
     const wcl = require('./warcraftlogs');
     const analysis = await wcl.analyzeWipe(req.params.code, parseInt(req.params.fightId));
     res.json(analysis);
+});
+
+// Debug: Blizzard Guild Roster
+app.get('/debug/blizzard/roster', async (req, res) => {
+    const roster = await blizzard.getGuildRoster();
+    res.json({
+        blizzard_client_id_set: !!process.env.BLIZZARD_CLIENT_ID,
+        blizzard_client_secret_set: !!process.env.BLIZZARD_CLIENT_SECRET,
+        roster: roster
+    });
+});
+
+// Debug: Blizzard Character
+app.get('/debug/blizzard/char/:name', async (req, res) => {
+    const profile = await blizzard.getCharacterProfile(req.params.name);
+    res.json(profile);
 });
 
 // Export für Vercel
