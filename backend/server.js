@@ -325,7 +325,7 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
         
-        // 3. KLASSE NACH M+ SCORE
+        // 3. KLASSE NACH M+ SCORE oder ITEM LEVEL
         else if ((lowerMsg.includes('magier') || lowerMsg.includes('mage') || 
                   lowerMsg.includes('krieger') || lowerMsg.includes('warrior') ||
                   lowerMsg.includes('paladin') || lowerMsg.includes('priester') ||
@@ -333,7 +333,8 @@ app.post('/chat', async (req, res) => {
                   lowerMsg.includes('hexenmeister') || lowerMsg.includes('druide') ||
                   lowerMsg.includes('schamane') || lowerMsg.includes('todesritter') ||
                   lowerMsg.includes('mönch') || lowerMsg.includes('dämonenjäger')) &&
-                 (lowerMsg.includes('m+') || lowerMsg.includes('mythic') || lowerMsg.includes('score'))) {
+                 (lowerMsg.includes('m+') || lowerMsg.includes('mythic') || lowerMsg.includes('score') ||
+                  lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl'))) {
             
             const classNames = ['magier', 'mage', 'krieger', 'warrior', 'paladin', 'priester', 
                                'priest', 'schurke', 'rogue', 'jäger', 'hunter', 'hexenmeister',
@@ -350,8 +351,39 @@ app.post('/chat', async (req, res) => {
             }
             
             if (foundClass) {
-                const classMembers = getByClass(members, foundClass, 5);
-                contextData = '\n\n' + formatMythicPlusList(classMembers, `${foundClass.charAt(0).toUpperCase() + foundClass.slice(1)} nach M+ Score`);
+                // Prüfe ob nach Item Level (GS) oder M+ Score gefragt wurde
+                const isItemLevel = lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl');
+                
+                if (isItemLevel) {
+                    // Sortiere nach Item Level statt M+ Score
+                    const classMembers = members
+                        .filter(m => {
+                            const classMap = {
+                                'magier': 'Mage', 'mage': 'Mage',
+                                'krieger': 'Warrior', 'warrior': 'Warrior',
+                                'paladin': 'Paladin',
+                                'priester': 'Priest', 'priest': 'Priest',
+                                'schurke': 'Rogue', 'rogue': 'Rogue',
+                                'jäger': 'Hunter', 'hunter': 'Hunter',
+                                'hexenmeister': 'Warlock', 'warlock': 'Warlock',
+                                'druide': 'Druid', 'druid': 'Druid',
+                                'schamane': 'Shaman', 'shaman': 'Shaman',
+                                'todesritter': 'Death Knight', 'death knight': 'Death Knight', 'dk': 'Death Knight',
+                                'mönch': 'Monk', 'monk': 'Monk',
+                                'dämonenjäger': 'Demon Hunter', 'demon hunter': 'Demon Hunter', 'dh': 'Demon Hunter',
+                                'evoker': 'Evoker'
+                            };
+                            const targetClass = classMap[foundClass.toLowerCase()];
+                            return m.class.toLowerCase() === targetClass.toLowerCase();
+                        })
+                        .sort((a, b) => b.item_level - a.item_level)
+                        .slice(0, 10);
+                    
+                    contextData = '\n\n' + formatItemLevelList(classMembers, `${foundClass.charAt(0).toUpperCase() + foundClass.slice(1)} nach Item Level`);
+                } else {
+                    const classMembers = getByClass(members, foundClass, 5);
+                    contextData = '\n\n' + formatMythicPlusList(classMembers, `${foundClass.charAt(0).toUpperCase() + foundClass.slice(1)} nach M+ Score`);
+                }
                 toolUsed = true;
             }
         }
