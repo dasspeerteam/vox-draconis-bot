@@ -429,6 +429,22 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
 
+        // 10. WARCRAFT LOGS: Spezifischer Report analysieren
+        else if (message.match(/[a-zA-Z0-9]{16}/)) {
+            const reportCode = message.match(/[a-zA-Z0-9]{16}/)[0];
+            console.log(`[WCL] Analysiere Report: ${reportCode}`);
+            
+            contextData = `\n\n📊 REPORT ANALYSE (${reportCode}):\n`;
+            contextData += `Hier ist der direkte Link zum Report:\n`;
+            contextData += `https://www.warcraftlogs.com/reports/${reportCode}\n\n`;
+            contextData += `Auf der Seite siehst du:\n`;
+            contextData += `• Alle Boss-Kills und Wipes\n`;
+            contextData += `• DPS/Healing Rankings\n`;
+            contextData += `• Mechanik-Fails\n`;
+            contextData += `• Gear und Talente\n`;
+            toolUsed = true;
+        }
+
         // OpenAI Call
         const aiResponse = await fetch(OPENAI_API_URL, {
             method: 'POST',
