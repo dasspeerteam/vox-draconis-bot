@@ -297,7 +297,7 @@ async function getGuildPerformance() {
         return reports;
     }
 
-    const reportData = reports?.guildData?.guild?.reports?.data;
+    const reportData = reports?.reportData?.reports?.data;
     if (!reportData || !reportData.length) {
         return { error: 'Keine Reports gefunden' };
     }
