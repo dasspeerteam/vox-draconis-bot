@@ -439,9 +439,11 @@ app.post('/chat', async (req, res) => {
         }
         
         // 9. WARCRAFT LOGS: Letzter Raid / Neuster Report
-        else if (lowerMsg.includes('letzter raid') || lowerMsg.includes('neuester report') || 
-                 lowerMsg.includes('letzter report') || lowerMsg.includes('aktueller raid') ||
-                 lowerMsg.includes('letztes log') || lowerMsg.includes('neuestes log')) {
+        else if (lowerMsg.includes('letzte') || lowerMsg.includes('letzter') || lowerMsg.includes('letzten') ||
+                 lowerMsg.includes('neuester') || lowerMsg.includes('neueste') || lowerMsg.includes('neuesten') ||
+                 lowerMsg.includes('aktueller') || lowerMsg.includes('aktuelle') ||
+                 lowerMsg.includes('nächster') || lowerMsg.includes('nächste')) &&
+                 (lowerMsg.includes('raid') || lowerMsg.includes('report') || lowerMsg.includes('log')) {
             
             contextData = '\n\n📅 LETZTER RAID:\n';
             contextData += 'Hier siehst du alle aktuellen Raids:\n';
