@@ -761,6 +761,19 @@ app.get('/', (req, res) => {
     res.send('Vox Draconis Bot läuft! v3.5 (Warcraft Logs + Raider.io)');
 });
 
+// Admin Panel
+app.get('/admin', (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const adminPath = path.join(__dirname, 'admin.html');
+    
+    if (fs.existsSync(adminPath)) {
+        res.sendFile(adminPath);
+    } else {
+        res.status(404).send('Admin panel not found');
+    }
+});
+
 // Debug: WCL Status
 app.get('/debug/wcl', async (req, res) => {
     const wcl = require('./warcraftlogs');
