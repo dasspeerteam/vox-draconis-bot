@@ -438,6 +438,57 @@ app.post('/chat', async (req, res) => {
             }
         }
         
+        // 8.5 WARCRAFT LOGS: Wipe-Analyse (Report-Code + Fight)
+        else if (message.match(/[a-zA-Z0-9]{16}\?fight=\d+/) || 
+                 (message.match(/[a-zA-Z0-9]{16}/) && lowerMsg.includes('wipe'))) {
+            const codeMatch = message.match(/([a-zA-Z0-9]{16})/);
+            const fightMatch = message.match(/fight=(\d+)/);
+            
+            if (codeMatch) {
+                const reportCode = codeMatch[1];
+                const fightId = fightMatch ? parseInt(fightMatch[1]) : 1;
+                
+                console.log(`[WCL] Analysiere Wipe: ${reportCode}, Fight ${fightId}`);
+                const wipeData = await wcl.analyzeWipe(reportCode, fightId);
+                
+                if (!wipeData.error) {
+                    contextData = `\n\n📊 WIPE-ANALYSE - ${wipeData.bossName} (${wipeData.difficulty}):\n`;
+                    contextData += `⏱️ Dauer: ${Math.floor(wipeData.duration / 60)}:${(wipeData.duration % 60).toString().padStart(2, '0')} Min\n`;
+                    contextData += `💀 Tode: ${wipeData.deaths.count}\n\n`;
+                    
+                    if (wipeData.deaths.firstDeaths.length > 0) {
+                        contextData += `🔴 Erste Tode:\n`;
+                        wipeData.deaths.firstDeaths.forEach((d, i) => {
+                            contextData += `  ${i + 1}. ${d.name}\n`;
+                        });
+                        contextData += `\n`;
+                    }
+                    
+                    contextData += `⚔️ Top DPS:\n`;
+                    wipeData.dps.top.slice(0, 3).forEach((d, i) => {
+                        contextData += `  ${i + 1}. ${d.name} - ${d.dps.toLocaleString()} DPS\n`;
+                    });
+                    
+                    if (wipeData.dps.bottom.length > 0 && wipeData.dps.bottom[0].dps < 100000) {
+                        contextData += `\n⚠️ Niedrige DPS:\n`;
+                        wipeData.dps.bottom.forEach(d => {
+                            contextData += `  • ${d.name} - ${d.dps.toLocaleString()} DPS\n`;
+                        });
+                    }
+                    
+                    contextData += `\n💚 Top Heiler:\n`;
+                    wipeData.heal.top.slice(0, 2).forEach((h, i) => {
+                        contextData += `  ${i + 1}. ${h.name} - ${h.hps.toLocaleString()} HPS\n`;
+                    });
+                    
+                    contextData += `\n🔗 Link: https://www.warcraftlogs.com/reports/${reportCode}#fight=${fightId}`;
+                } else {
+                    contextData = `\n\n(WCL Fehler: ${wipeData.error})`;
+                }
+                toolUsed = true;
+            }
+        }
+
         // 9. WARCRAFT LOGS: Letzter Raid / Neuster Report
         else if ((lowerMsg.includes('letzte') || lowerMsg.includes('letzter') || lowerMsg.includes('letzten') ||
                  lowerMsg.includes('neuester') || lowerMsg.includes('neueste') || lowerMsg.includes('neuesten') ||

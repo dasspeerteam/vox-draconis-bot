@@ -329,12 +329,77 @@ async function getGuildPerformance() {
     };
 }
 
+/**
+ * Wipe-Analyse für einen spezifischen Fight
+ */
+async function analyzeWipe(reportCode, fightId) {
+    const analysis = await getFightAnalysis(reportCode, fightId);
+    
+    if (analysis.error) {
+        return analysis;
+    }
+    
+    const report = analysis?.reportData?.report;
+    if (!report) {
+        return { error: 'Report nicht gefunden' };
+    }
+    
+    const fight = report.fights?.[0];
+    if (!fight) {
+        return { error: 'Fight nicht gefunden' };
+    }
+    
+    // Daten extrahieren
+    const deaths = report.deaths?.data || [];
+    const damageTable = report.damageDone?.data?.entries || [];
+    const healTable = report.healingDone?.data?.entries || [];
+    
+    // Analyse erstellen
+    const result = {
+        bossName: fight.name,
+        difficulty: fight.difficulty === 5 ? 'Heroic' : fight.difficulty === 4 ? 'Normal' : 'Mythic',
+        duration: Math.floor(fight.duration / 1000), // in Sekunden
+        isKill: fight.kill,
+        averageItemLevel: fight.averageItemLevel,
+        deaths: {
+            count: deaths.length,
+            firstDeaths: deaths.slice(0, 5).map(d => ({
+                name: d.target?.name || 'Unbekannt',
+                time: d.timestamp,
+                ability: d.ability?.name || 'Unbekannt'
+            }))
+        },
+        dps: {
+            top: damageTable.slice(0, 5).map(d => ({
+                name: d.name,
+                class: d.type,
+                dps: Math.round(d.total / (fight.duration / 1000))
+            })),
+            bottom: damageTable.slice(-3).map(d => ({
+                name: d.name,
+                class: d.type,
+                dps: Math.round(d.total / (fight.duration / 1000))
+            }))
+        },
+        heal: {
+            top: healTable.slice(0, 3).map(h => ({
+                name: h.name,
+                class: h.type,
+                hps: Math.round(h.total / (fight.duration / 1000))
+            }))
+        }
+    };
+    
+    return result;
+}
+
 module.exports = {
     getBossRankings,
     getGuildReports,
     getFightAnalysis,
     analyzeBossTactics,
     getGuildPerformance,
+    analyzeWipe,
     ZONES,
     BOSSES
 };
