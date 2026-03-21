@@ -288,6 +288,23 @@ app.post('/chat', async (req, res) => {
 
         const members = guildData.members;
 
+        // 0. WARCRAFT LOGS: Spezifischer Report analysieren (Priorität)
+        const reportCodeMatch = message.match(/[a-zA-Z0-9]{16}/);
+        if (reportCodeMatch && (lowerMsg.includes('report') || lowerMsg.includes('analysiere') || lowerMsg.includes('log'))) {
+            const reportCode = reportCodeMatch[0];
+            console.log(`[WCL] Analysiere Report: ${reportCode}`);
+            
+            contextData = `\n\n📊 REPORT ANALYSE (${reportCode}):\n`;
+            contextData += `Hier ist der direkte Link zum Report:\n`;
+            contextData += `https://www.warcraftlogs.com/reports/${reportCode}\n\n`;
+            contextData += `Auf der Seite siehst du:\n`;
+            contextData += `• Alle Boss-Kills und Wipes\n`;
+            contextData += `• DPS/Healing Rankings\n`;
+            contextData += `• Mechanik-Fails\n`;
+            contextData += `• Gear und Talente\n`;
+            toolUsed = true;
+        }
+
         // 1. TANKS NACH ITEM LEVEL
         if ((lowerMsg.includes('tank') || lowerMsg.includes('tanks')) && 
             (lowerMsg.includes('item level') || lowerMsg.includes('ilvl') || lowerMsg.includes('gs'))) {
@@ -426,22 +443,6 @@ app.post('/chat', async (req, res) => {
                  lowerMsg.includes('letzte kills') || lowerMsg.includes('raid-fortschritt')) {
             
             contextData = '\n\n📊 WARCRAFT LOGS:\nSchau dir alle Raid-Logs hier an:\nhttps://www.warcraftlogs.com/guild/calendar/802185\n\n💡 Tipp: Frag mich nach Boss-Taktiken (z.B. "Wie besiegt man Sikran?") für detaillierte Analysen!';
-            toolUsed = true;
-        }
-
-        // 10. WARCRAFT LOGS: Spezifischer Report analysieren
-        else if (message.match(/[a-zA-Z0-9]{16}/)) {
-            const reportCode = message.match(/[a-zA-Z0-9]{16}/)[0];
-            console.log(`[WCL] Analysiere Report: ${reportCode}`);
-            
-            contextData = `\n\n📊 REPORT ANALYSE (${reportCode}):\n`;
-            contextData += `Hier ist der direkte Link zum Report:\n`;
-            contextData += `https://www.warcraftlogs.com/reports/${reportCode}\n\n`;
-            contextData += `Auf der Seite siehst du:\n`;
-            contextData += `• Alle Boss-Kills und Wipes\n`;
-            contextData += `• DPS/Healing Rankings\n`;
-            contextData += `• Mechanik-Fails\n`;
-            contextData += `• Gear und Talente\n`;
             toolUsed = true;
         }
 
