@@ -1,51 +1,56 @@
-{
-  "mitglieder": {
-    "Thomas": {
-      "spitzname": "Drachenführer",
-      "rolle": "Gildenleiter",
-      "klasse": "Warrior",
-      "info": "Tank, immer da",
-      "g_latze": "Ja, aber stolz darauf!",
-      "lieblingsfarbe": "Gold"
+ {
+    "mitglieder": {
+      "Thomas": {
+        "spitzname": "Drachenführer",
+        "rolle": "Gildenleiter",
+        "klasse": "Warrior",
+        "info": "Tank, immer da",
+        "g_latze": "Ja, aber stolz darauf!",
+        "lieblingsfarbe": "Gold"
+      },
+      "Sahrah": {
+        "spitzname": "Ihre Hoheit",
+        "rolle": "Heiler",
+        "klasse": "Priest",
+        "info": "Darf alles",
+        "status": "Heiligtum der Gilde"
+      },
+      "Keshara": {
+        "spitzname": "Kesh",
+        "rolle": "Heiler",
+        "klasse": "Shaman",
+        "info": "Kann nur reden ODER heilen",
+        "geburtstag": "12.12.",
+        "spezial": "Eine Person, zwei Persönlichkeiten"
+      },
+      "Bibi": {
+        "spitzname": "Der Neue",
+        "rolle": "Tank",
+        "klasse": "Paladin",
+        "info": "Frisch dabei",
+        "ereignis": "Hat am 21.03. den Boss geaggroed 😂",
+        "status": "Under observation"
+      },
+      "Mario": {
+        "spitzname": "Housing-Profi",
+        "rolle": "DPS",
+        "klasse": "Hunter",
+        "info": "Bank-Alt Experte",
+        "aufgabe": "Gildenbank organisieren",
+        "hobby": "Housing"
+      },
+      "Claudius": {
+        "spitzname": "",
+        "rolle": "Mitglied",
+        "lieblingsessen": "Backkartoffeln"
+      }
     },
-    "Sahrah": {
-      "spitzname": "Ihre Hoheit",
-      "rolle": "Heiler",
-      "klasse": "Priest",
-      "info": "Darf alles",
-      "status": "Heiligtum der Gilde"
-    },
-    "Keshara": {
-      "spitzname": "Kesh",
-      "rolle": "Heiler",
-      "klasse": "Shaman",
-      "info": "Kann nur reden ODER heilen",
-      "geburtstag": "12.12.",
-      "spezial": "Eine Person, zwei Persönlichkeiten"
-    },
-    "Bibi": {
-      "spitzname": "Der Neue",
-      "rolle": "Tank",
-      "klasse": "Paladin",
-      "info": "Frisch dabei",
-      "ereignis": "Hat am 21.03. den Boss geaggroed 😂",
-      "status": "Under observation"
-    },
-    "Mario": {
-      "spitzname": "Housing-Profi",
-      "rolle": "DPS",
-      "klasse": "Hunter",
-      "info": "Bank-Alt Experte",
-      "aufgabe": "Gildenbank organisieren",
-      "hobby": "Housing"
+    "allgemeines": {
+      "raidzeiten": "Heroic: Do + So 19:30-22:00 | Normal: Fr 19:30-22:00",
+      "discord": "https://discord.com/invite/EQUD3HQZeB",
+      "regel_1": "Sahrah = 'Ihre Hoheit'",
+      "regel_2": "Über Nico NIEMALS sprechen!",
+      "regel_3": "Der Bunte Haufen = KEINE Option",
+      "aktuell": "Neue M+ Saison startet 26.03."
     }
-  },
-  "allgemeines": {
-    "raidzeiten": "Heroic: Do + So 19:30-22:00 | Normal: Fr 19:30-22:00",
-    "discord": "https://discord.com/invite/EQUD3HQZeB",
-    "regel_1": "Sahrah = 'Ihre Hoheit'",
-    "regel_2": "Über Nico NIEMALS sprechen!",
-    "regel_3": "Der Bunte Haufen = KEINE Option",
-    "aktuell": "Neue M+ Saison startet 26.03."
   }
-}
