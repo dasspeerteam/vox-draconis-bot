@@ -275,6 +275,15 @@ const WOW_SYSTEM_PROMPT = `Du bist "Vox Draconis" - der offizielle WoW-Hilfsbot 
 app.post('/chat', async (req, res) => {
     try {
         const { message } = req.body;
+        
+        // Prüfe ob Message existiert
+        if (!message) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Keine Nachricht erhalten. Body: ' + JSON.stringify(req.body) 
+            });
+        }
+        
         const lowerMsg = message.toLowerCase();
         
         let contextData = '';
