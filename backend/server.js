@@ -794,7 +794,7 @@ async function handleChat(req, res) {
         console.error('Error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
-});
+}
 
 // Health Check
 app.get('/', (req, res) => {
