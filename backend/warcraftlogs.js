@@ -181,35 +181,28 @@ async function getGuildReports(limit = 10) {
  */
 async function getFightAnalysis(reportCode, fightId) {
     const query = `
-    query($code: String!, $fightId: [Int]!) {
+    query($code: String!) {
         reportData {
             report(code: $code) {
-                fights(id: $fightId) {
+                fights {
+                    id
                     name
                     difficulty
                     kill
                     duration
                     averageItemLevel
-                    composition {
-                        name
-                        id
-                        type
-                        specs {
-                            spec
-                        }
-                    }
                 }
-                table(fightIDs: $fightId, dataType: Summary)
-                damageDone: table(fightIDs: $fightId, dataType: DamageDone)
-                healingDone: table(fightIDs: $fightId, dataType: HealingDone)
-                deaths: events(fightIDs: $fightId, dataType: Deaths, limit: 20) {
+                table(fightIDs: [${fightId}], dataType: Summary)
+                damageDone: table(fightIDs: [${fightId}], dataType: DamageDone)
+                healingDone: table(fightIDs: [${fightId}], dataType: HealingDone)
+                deaths: events(fightIDs: [${fightId}], dataType: Deaths, limit: 20) {
                     data
                 }
             }
         }
     }`;
 
-    return await wclQuery(query, { code: reportCode, fightId: [fightId] });
+    return await wclQuery(query, { code: reportCode });
 }
 
 /**
@@ -344,9 +337,10 @@ async function analyzeWipe(reportCode, fightId) {
         return { error: 'Report nicht gefunden' };
     }
     
-    const fight = report.fights?.[0];
+    // Finde den richtigen Fight anhand der ID
+    const fight = report.fights?.find(f => f.id === fightId);
     if (!fight) {
-        return { error: 'Fight nicht gefunden' };
+        return { error: `Fight ${fightId} nicht gefunden` };
     }
     
     // Daten extrahieren
