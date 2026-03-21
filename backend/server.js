@@ -304,6 +304,20 @@ app.post('/chat', async (req, res) => {
             contextData += `• Gear und Talente\n`;
             toolUsed = true;
         }
+        
+        // 0.5 WER HAT DAS HÖCHSTE GS (Priorität vor anderen)
+        else if ((lowerMsg.includes('höchste') || lowerMsg.includes('höchstes')) && 
+                 (lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl'))) {
+            
+            const top1 = getTopByItemLevel(members, 1);
+            if (top1.length > 0 && top1[0].item_level > 0) {
+                const best = top1[0];
+                contextData = `\n\n🏆 HÖCHSTES ITEM LEVEL:\n1. ${best.name} (${best.class}) - GS ${best.item_level}`;
+            } else {
+                contextData = '\n\n⚠️ Keine Item Level Daten verfügbar (Charaktere nicht aktiv).\nVersuche: "Wer sind die Top 5?" für eine Liste mit aktiven Spielern.';
+            }
+            toolUsed = true;
+        }
 
         // 1. TANKS NACH ITEM LEVEL
         if ((lowerMsg.includes('tank') || lowerMsg.includes('tanks')) && 
@@ -322,20 +336,6 @@ app.post('/chat', async (req, res) => {
             
             const top5 = getTopByItemLevel(members, 5);
             contextData = '\n\n' + formatItemLevelList(top5, 'Top 5 nach Item Level');
-            toolUsed = true;
-        }
-        
-        // 2.5 WER HAT DAS HÖCHSTE GS (einzeln)
-        else if ((lowerMsg.includes('höchste') || lowerMsg.includes('höchstes')) && 
-                 (lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl'))) {
-            
-            const top1 = getTopByItemLevel(members, 1);
-            if (top1.length > 0) {
-                const best = top1[0];
-                contextData = `\n\n🏆 HÖCHSTES ITEM LEVEL:\n1. ${best.name} (${best.class}) - GS ${best.item_level}`;
-            } else {
-                contextData = '\n\nKeine Item Level Daten verfügbar.';
-            }
             toolUsed = true;
         }
         
