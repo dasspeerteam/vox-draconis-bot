@@ -296,6 +296,8 @@ app.get('/chat', (req, res) => {
 
 // Haupt-Handler (für POST und GET)
 async function handleChat(req, res) {
+    console.log('[CHAT] Request body:', JSON.stringify(req.body));
+    console.log('[CHAT] Query params:', JSON.stringify(req.query));
     try {
         const { message } = req.body;
         
