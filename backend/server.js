@@ -673,7 +673,7 @@ app.post('/chat', async (req, res) => {
         try {
             const fs = require('fs');
             const path = require('path');
-            const guildDataPath = path.join(__dirname, '..', 'guild-data.json');
+            const guildDataPath = path.join(__dirname, 'guild-data.json');
             
             if (fs.existsSync(guildDataPath)) {
                 const guildData = JSON.parse(fs.readFileSync(guildDataPath, 'utf8'));
