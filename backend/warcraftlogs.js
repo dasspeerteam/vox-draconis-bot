@@ -189,8 +189,8 @@ async function getFightAnalysis(reportCode, fightId) {
                     name
                     difficulty
                     kill
-                    duration
-                    averageItemLevel
+                    startTime
+                    endTime
                 }
                 table(fightIDs: [${fightId}], dataType: Summary)
                 damageDone: table(fightIDs: [${fightId}], dataType: DamageDone)
@@ -348,13 +348,16 @@ async function analyzeWipe(reportCode, fightId) {
     const damageTable = report.damageDone?.data?.entries || [];
     const healTable = report.healingDone?.data?.entries || [];
     
+    // Dauer berechnen (endTime - startTime)
+    const duration = fight.endTime && fight.startTime ? 
+        Math.floor((fight.endTime - fight.startTime) / 1000) : 0;
+    
     // Analyse erstellen
     const result = {
         bossName: fight.name,
         difficulty: fight.difficulty === 5 ? 'Heroic' : fight.difficulty === 4 ? 'Normal' : 'Mythic',
-        duration: Math.floor(fight.duration / 1000), // in Sekunden
+        duration: duration, // in Sekunden
         isKill: fight.kill,
-        averageItemLevel: fight.averageItemLevel,
         deaths: {
             count: deaths.length,
             firstDeaths: deaths.slice(0, 5).map(d => ({
