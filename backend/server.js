@@ -26,7 +26,7 @@ const GUILD_CONFIG = {
     name: 'Vox Draconis'
 };
 
-// Cache für Gildendaten (5 Minuten)
+// Cache für Gildendaten (5 Minuten) - v2
 let guildCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 Minuten
