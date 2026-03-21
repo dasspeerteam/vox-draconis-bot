@@ -281,17 +281,28 @@ app.post('/test', (req, res) => {
 // ============================================================================
 
 // POST-Handler
-app.post('/chat', (req, res) => handleChat(req, res));
+app.post('/chat', async (req, res) => {
+    try {
+        await handleChat(req, res);
+    } catch (err) {
+        console.error('[POST] Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // GET-Handler als Workaround für Vercel POST-Probleme
-app.get('/chat', (req, res) => {
-    const message = req.query.message;
-    if (!message) {
-        return res.json({ error: 'Bitte ?message=... angeben' });
+app.get('/chat', async (req, res) => {
+    try {
+        const message = req.query.message;
+        if (!message) {
+            return res.json({ error: 'Bitte ?message=... angeben' });
+        }
+        req.body = { message };
+        await handleChat(req, res);
+    } catch (err) {
+        console.error('[GET] Error:', err);
+        res.status(500).json({ error: err.message });
     }
-    // Weiterleiten an POST-Handler
-    req.body = { message };
-    handleChat(req, res);
 });
 
 // Haupt-Handler (für POST und GET)
