@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Google Sheets ID (aus Umgebungsvariable oder fest)
-const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || '1VHQtS8acZcM5y1NQZ0Fhcf79DypnthrAcUh5DynvmJg';
+const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || '2PACX-1vRGscjEFMI4UvLiGH7n4xflpKuyNc09kaXj743NTFo_FefryR94RDR4VMluGprTIAW032AVZdw2hmAy';
 
 // API KONFIGURATION
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;

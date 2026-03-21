@@ -12,7 +12,9 @@ const CACHE_DURATION = 2 * 60 * 1000; // 2 Minuten Cache (schnelle Updates!)
 
 /**
  * Holt Daten aus einem öffentlichen Google Sheet
- * Format: CSV Export
+ * Unterstützt beide Formate:
+ * 1. Normal: 1VHQtS8acZcM5y1NQZ0Fhcf79DypnthrAcUh5DynvmJg
+ * 2. Published: 2PACX-1vRGscjEFMI4UvLiGH7n4xflpKuyNc09kaXj743NTFo_FefryR94RDR4VMluGprTIAW032AVZdw2hmAy
  */
 async function getSheetData(sheetId, sheetName = 'Sheet1') {
     const cacheKey = `${sheetId}_${sheetName}`;
@@ -24,8 +26,18 @@ async function getSheetData(sheetId, sheetName = 'Sheet1') {
     }
 
     try {
-        // Google Sheets CSV Export URL
-        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        let url;
+        
+        // Prüfe ob es ein "Published to web" ID ist (länger und enthält Bindestriche)
+        if (sheetId.length > 40 && sheetId.includes('-')) {
+            // Published to web Format
+            url = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
+            console.log('[GoogleSheets] Verwende Published-to-Web Format');
+        } else {
+            // Normales Format
+            url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+            console.log('[GoogleSheets] Verwende Standard Format');
+        }
         
         console.log('[GoogleSheets] Lade Daten...');
         const response = await fetch(url, { timeout: 5000 });
