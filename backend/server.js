@@ -565,6 +565,13 @@ app.get('/debug/wcl', async (req, res) => {
     });
 });
 
+// Debug: Fight Analysis
+app.get('/debug/fight/:code/:fightId', async (req, res) => {
+    const wcl = require('./warcraftlogs');
+    const analysis = await wcl.analyzeWipe(req.params.code, parseInt(req.params.fightId));
+    res.json(analysis);
+});
+
 // Export für Vercel
 module.exports = app;
 
