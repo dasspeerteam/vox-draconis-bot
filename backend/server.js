@@ -277,10 +277,25 @@ app.post('/test', (req, res) => {
 });
 
 // ============================================================================
-// CHAT ENDPOINT
+// CHAT ENDPOINT (POST + GET Workaround)
 // ============================================================================
 
-app.post('/chat', async (req, res) => {
+// POST-Handler
+app.post('/chat', (req, res) => handleChat(req, res));
+
+// GET-Handler als Workaround für Vercel POST-Probleme
+app.get('/chat', (req, res) => {
+    const message = req.query.message;
+    if (!message) {
+        return res.json({ error: 'Bitte ?message=... angeben' });
+    }
+    // Weiterleiten an POST-Handler
+    req.body = { message };
+    handleChat(req, res);
+});
+
+// Haupt-Handler (für POST und GET)
+async function handleChat(req, res) {
     try {
         const { message } = req.body;
         
