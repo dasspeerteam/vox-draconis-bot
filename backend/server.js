@@ -110,7 +110,7 @@ function getTopByItemLevel(members, limit = 5) {
 function getTopByMythicPlus(members, limit = 5) {
     return members
         .filter(m => m.mythic_plus.score > 0)
-        .sort((a, b) => b.mythic_plus.score - a.mythic_plus.score)
+        .sort((a,b) => b.mythic_plus.score - a.mythic_plus.score)
         .slice(0, limit);
 }
 
@@ -246,7 +246,7 @@ const WOW_SYSTEM_PROMPT = `Du bist "Vox Draconis" - der offizielle WoW-Hilfsbot 
 
 👑 GILDENLEITUNG & STRUKTUR:
 - Gildenleiter: Thomas (Tank)
-- Weitere Tanks: Olaf, Niveà/Nivea
+- Weitere Tanks: Olaf, Nivéa/Nivea
 - Bester Heiler: Alex/Kesh/Keshara (EINE Person! Kann nur reden ODER heilen)
 - Housing: Mario
 
@@ -261,7 +261,7 @@ const WOW_SYSTEM_PROMPT = `Du bist "Vox Draconis" - der offizielle WoW-Hilfsbot 
 
 💬 DISCORD: https://discord.com/invite/EQUD3HQZeB
 
-📝 ANTWORTEN: Kurz & knapp (max. 3 Sätze)`;
+📋 ANTWORTEN: Kurz & knapp (max. 3 Sätze)`;
 
 // ============================================================================
 // CHAT ENDPOINT
@@ -308,7 +308,7 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
         
-        // 3. KLASSE NACH M+ SCORE (z.B. "Welcher Magier hat den höchsten M+ Score?")
+        // 3. KLASSE NACH M+ SCORE
         else if ((lowerMsg.includes('magier') || lowerMsg.includes('mage') || 
                   lowerMsg.includes('krieger') || lowerMsg.includes('warrior') ||
                   lowerMsg.includes('paladin') || lowerMsg.includes('priester') ||
@@ -318,7 +318,6 @@ app.post('/chat', async (req, res) => {
                   lowerMsg.includes('mönch') || lowerMsg.includes('dämonenjäger')) &&
                  (lowerMsg.includes('m+') || lowerMsg.includes('mythic') || lowerMsg.includes('score'))) {
             
-            // Extrahiere Klassennamen
             const classNames = ['magier', 'mage', 'krieger', 'warrior', 'paladin', 'priester', 
                                'priest', 'schurke', 'rogue', 'jäger', 'hunter', 'hexenmeister',
                                'warlock', 'druide', 'druid', 'schamane', 'shaman', 'todesritter',
@@ -391,7 +390,6 @@ app.post('/chat', async (req, res) => {
         else if (lowerMsg.includes('boss') || lowerMsg.includes('taktik') || 
                  lowerMsg.includes('besiegen') || lowerMsg.includes('killen')) {
             
-            // Boss-Namen erkennen
             const bosses = ['sikran', 'one-armed-bandit', 'mugzee', 'chrome-king-gallywix', 
                            'vexie', 'stix', 'sprocketmonger', 'bandit', 'gallywix'];
             
@@ -427,22 +425,7 @@ app.post('/chat', async (req, res) => {
         else if (lowerMsg.includes('logs') || lowerMsg.includes('report') || 
                  lowerMsg.includes('letzte kills') || lowerMsg.includes('raid-fortschritt')) {
             
-            console.log('[WCL] Rufe Gilde-Performance ab...');
-            const performance = await wcl.getGuildPerformance();
-            
-            if (!performance.error) {
-                contextData = '\n\nWARCRAFT LOGS - LETZTE AKTIVERITÄTEN:\n';
-                if (performance.recentKills && performance.recentKills.length > 0) {
-                    contextData += '\nLetzte Kills:\n';
-                    performance.recentKills.slice(0, 5).forEach(kill => {
-                        contextData += `• ${kill.boss} (${kill.difficulty}) - ${kill.date}\n`;
-                    });
-                } else {
-                    contextData += '\nKeine recent Kills gefunden.\n';
-                }
-            } else {
-                contextData = `\n\n(WCL Fehler: ${performance.error})`;
-            }
+            contextData = '\n\n📊 WARCRAFT LOGS:\nSchau dir alle Raid-Logs hier an:\nhttps://www.warcraftlogs.com/guild/calendar/802185\n\n💡 Tipp: Frag mich nach Boss-Taktiken (z.B. "Wie besiegt man Sikran?") für detaillierte Analysen!';
             toolUsed = true;
         }
 
