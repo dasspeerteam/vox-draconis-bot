@@ -680,8 +680,9 @@ app.post('/chat', async (req, res) => {
 
         // 11. JSON-DATEI: Flexibles Gilden-Wissen (lokale Datei)
         try {
-            // require() ist robuster auf Vercel als fs.readFileSync
-            const guildData = require('./guild-data.json');
+            // DEBUG: Vorübergehend deaktiviert um Fehler zu finden
+            // const guildData = require('./guild-data.json');
+            const guildData = null; // Deaktiviert für Debug
                 
                 // Prüfe ob nach einem bestimmten Spieler gefragt wurde
                 if (guildData.mitglieder) {
