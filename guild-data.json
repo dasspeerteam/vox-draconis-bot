@@ -1,0 +1,43 @@
+{
+  "mitglieder": [
+    {
+      "name": "Thomas",
+      "spitzname": "Drachenführer",
+      "rolle": "Gildenleiter",
+      "klasse": "Warrior",
+      "notiz": "Tank, immer da"
+    },
+    {
+      "name": "Sahrah",
+      "spitzname": "Ihre Hoheit",
+      "rolle": "Heiler",
+      "klasse": "Priest",
+      "notiz": "Darf alles"
+    },
+    {
+      "name": "Bibi",
+      "spitzname": "Der Neue",
+      "rolle": "Tank",
+      "klasse": "Paladin",
+      "notiz": "Hat heute den Boss geaggroed 😂"
+    }
+  ],
+  "wissen": [
+    {
+      "kategorie": "Raidzeiten",
+      "info": "Heroic: Do + So 19:30-22:00, Normal: Fr 19:30-22:00",
+      "datum": "permanent"
+    },
+    {
+      "kategorie": "Regel",
+      "info": "Sahrah = 'Ihre Hoheit'",
+      "datum": "permanent"
+    },
+    {
+      "kategorie": "Inside Joke",
+      "info": "Bibi hat heute den Boss geaggroed",
+      "datum": "21.03.2026"
+    }
+  ],
+  "discord": "https://discord.com/invite/EQUD3HQZeB"
+}

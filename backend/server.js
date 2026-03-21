@@ -669,32 +669,51 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
 
-        // 11. GOOGLE SHEETS: Spitznamen & Gilden-Wissen
-        // Wenn nach einem Spieler mit Spitzname gefragt wird
-        const sheetData = await sheets.formatGuildContext(GOOGLE_SHEET_ID);
-        if (sheetData && !sheetData.error) {
-            // Prüfe ob nach einem bestimmten Spieler gefragt wurde
-            const allMembers = await sheets.getSheetData(GOOGLE_SHEET_ID, 'Mitglieder');
-            if (!allMembers.error) {
-                for (const member of allMembers) {
-                    if (member.Name && lowerMsg.includes(member.Name.toLowerCase())) {
-                        contextData += `\n\n👤 ${member.Name}:\n`;
-                        if (member.Spitzname) contextData += `Spitzname: "${member.Spitzname}"\n`;
-                        if (member.Rolle) contextData += `Rolle: ${member.Rolle}\n`;
-                        if (member.Notiz) contextData += `Info: ${member.Notiz}\n`;
+        // 11. JSON-DATEI: Spitznamen & Gilden-Wissen (lokale Datei - funktioniert!)
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const guildDataPath = path.join(__dirname, '..', 'guild-data.json');
+            
+            if (fs.existsSync(guildDataPath)) {
+                const guildData = JSON.parse(fs.readFileSync(guildDataPath, 'utf8'));
+                
+                // Prüfe ob nach einem bestimmten Spieler gefragt wurde
+                if (guildData.mitglieder) {
+                    for (const member of guildData.mitglieder) {
+                        if (member.name && lowerMsg.includes(member.name.toLowerCase())) {
+                            contextData += `\n\n👤 ${member.name}:\n`;
+                            if (member.spitzname) contextData += `Spitzname: "${member.spitzname}"\n`;
+                            if (member.rolle) contextData += `Rolle: ${member.rolle}\n`;
+                            if (member.klasse) contextData += `Klasse: ${member.klasse}\n`;
+                            if (member.notiz) contextData += `Info: ${member.notiz}\n`;
+                            toolUsed = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // Füge generelles Gilden-Wissen hinzu
+                if (lowerMsg.includes('spitzname') || lowerMsg.includes('regel') || 
+                    lowerMsg.includes('wer ist') || lowerMsg.includes('was ist') ||
+                    lowerMsg.includes('aktuell') || lowerMsg.includes('neu') ||
+                    lowerMsg.includes('wissen') || lowerMsg.includes('info')) {
+                    
+                    if (guildData.wissen && guildData.wissen.length > 0) {
+                        contextData += '\n\n📋 GILDEN-WISSEN:\n';
+                        guildData.wissen.forEach(item => {
+                            contextData += `• ${item.kategorie}: ${item.info}`;
+                            if (item.datum && item.datum !== 'permanent') {
+                                contextData += ` (${item.datum})`;
+                            }
+                            contextData += '\n';
+                        });
                         toolUsed = true;
-                        break;
                     }
                 }
             }
-            
-            // Füge generelles Gilden-Wissen hinzu (bei relevanten Fragen)
-            if (lowerMsg.includes('spitzname') || lowerMsg.includes('regel') || 
-                lowerMsg.includes('wer ist') || lowerMsg.includes('was ist') ||
-                lowerMsg.includes('aktuell') || lowerMsg.includes('neu')) {
-                contextData += sheetData;
-                toolUsed = true;
-            }
+        } catch (error) {
+            console.error('[JSON] Fehler:', error.message);
         }
 
         // OpenAI Call
