@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vox Draconis - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #d4af37;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: #16213e;
+            border: 1px solid #0f3460;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .member-card {
+            background: #0f3460;
+            border: 1px solid #1a4a7a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .member-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-add {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #34ce57;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #e04b59;
+        }
+
+        .btn-save {
+            background: #d4af37;
+            color: #1a1a2e;
+            font-weight: bold;
+            padding: 12px 30px;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            background: #f4d03f;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .info-key {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #1a4a7a;
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .info-value {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #1a4a7a;
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .new-member {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .new-member input {
+            padding: 10px;
+            border: 1px solid #1a4a7a;
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .instructions {
+            background: #0f3460;
+            border-left: 4px solid #d4af37;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .instructions h3 {
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .instructions code {
+            background: #1a1a2e;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .output {
+            background: #1a1a2e;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .output.show {
+            display: block;
+        }
+
+        .output h3 {
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+
+        .output pre {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.85rem;
+        }
+
+        .github-link {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .github-link:hover {
+            background: #34ce57;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐉 Vox Draconis - Admin Panel</h1>
+        <p class="subtitle">Gilden-Wissen verwalten (Spitznamen, Infos, Geburtstage...)</p>
+
+        <div class="instructions">
+            <h3>📋 Anleitung:</h3>
+            <ol>
+                <li>Füge Mitglieder hinzu oder bearbeite bestehende</li>
+                <li>Füge beliebige Infos hinzu (Geburtstag, Haustier, lustige Storys...)</li>
+                <li>Klicke auf <strong>"JSON Generieren"</strong></li>
+                <li>Kopiere den JSON-Code und füge ihn auf GitHub ein</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>👥 Mitglieder verwalten</h2>
+            
+            <div id="members-container">
+                <!-- Hier werden die Mitglieder dynamisch eingefügt -->
+            </div>
+
+            <h3 style="margin-top: 20px; margin-bottom: 10px; color: #888;">Neues Mitglied hinzufügen:</h3>
+            <div class="new-member">
+                <input type="text" id="new-name" placeholder="Name (z.B. Thomas)">
+                <input type="text" id="new-spitzname" placeholder="Spitzname (z.B. Drachenführer)">
+                <input type="text" id="new-rolle" placeholder="Rolle (z.B. Tank)">
+                <button class="btn btn-add" onclick="addMember()">➕ Hinzufügen</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Allgemeine Infos</h2>
+            <div id="general-container">
+                <!-- Allgemeine Infos -->
+            </div>
+            <button class="btn btn-add" onclick="addGeneralInfo()" style="margin-top: 10px;">➕ Info hinzufügen</button>
+        </div>
+
+        <button class="btn btn-save" onclick="generateJSON()" style="width: 100%; margin-top: 20px;">💾 JSON Generieren</button>
+
+        <div id="output" class="output">
+            <h3>✅ JSON wurde generiert!</h3>
+            <p>Kopiere diesen Code:</p>
+            <pre id="json-output"></pre>
+            <p style="margin-top: 15px;">Dann klicke hier um auf GitHub zu gehen:</p>
+            <a href="https://github.com/dasspeerteam/vox-draconis-bot/edit/main/backend/guild-data.json" target="_blank" class="github-link">
+                🚀 Auf GitHub öffnen & einfügen
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Aktuelle Daten (werden geladen)
+        let guildData = {
+            mitglieder: {},
+            allgemeines: {}
+        };
+
+        // Beispiel-Daten zum Start
+        function loadExampleData() {
+            guildData = {
+                mitglieder: {
+                    "Thomas": {
+                        "spitzname": "Drachenführer",
+                        "rolle": "Gildenleiter",
+                        "klasse": "Warrior",
+                        "info": "Tank, immer da",
+                        "g_latze": "Ja, aber stolz darauf!",
+                        "lieblingsfarbe": "Gold"
+                    },
+                    "Keshara": {
+                        "spitzname": "Kesh",
+                        "rolle": "Heiler",
+                        "klasse": "Shaman",
+                        "geburtstag": "12.12.",
+                        "info": "Kann nur reden ODER heilen"
+                    },
+                    "Bibi": {
+                        "spitzname": "Der Neue",
+                        "rolle": "Tank",
+                        "klasse": "Paladin",
+                        "ereignis": "Hat am 21.03. den Boss geaggroed 😂"
+                    }
+                },
+                allgemeines: {
+                    "raidzeiten": "Heroic: Do + So 19:30-22:00 | Normal: Fr 19:30-22:00",
+                    "discord": "https://discord.com/invite/EQUD3HQZeB",
+                    "regel_1": "Sahrah = 'Ihre Hoheit'",
+                    "regel_2": "Über Nico NIEMALS sprechen!"
+                }
+            };
+            renderMembers();
+            renderGeneral();
+        }
+
+        function renderMembers() {
+            const container = document.getElementById('members-container');
+            container.innerHTML = '';
+
+            for (const [name, data] of Object.entries(guildData.mitglieder)) {
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                
+                let infoRows = '';
+                for (const [key, value] of Object.entries(data)) {
+                    infoRows += `
+                        <div class="info-row">
+                            <input type="text" class="info-key" value="${key}" onchange="updateInfo('${name}', '${key}', this.value, 'key')">
+                            <input type="text" class="info-value" value="${value}" onchange="updateInfo('${name}', '${key}', this.value, 'value')">
+                            <button class="btn btn-remove" onclick="removeInfo('${name}', '${key}')">🗑️</button>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="member-header">
+                        <span class="member-name">${name}</span>
+                        <div>
+                            <button class="btn btn-add" onclick="addInfoToMember('${name}')">➕ Info</button>
+                            <button class="btn btn-remove" onclick="removeMember('${name}')">🗑️ Mitglied</button>
+                        </div>
+                    </div>
+                    ${infoRows}
+                `;
+                
+                container.appendChild(card);
+            }
+        }
+
+        function renderGeneral() {
+            const container = document.getElementById('general-container');
+            container.innerHTML = '';
+
+            for (const [key, value] of Object.entries(guildData.allgemeines)) {
+                const row = document.createElement('div');
+                row.className = 'info-row';
+                row.innerHTML = `
+                    <input type="text" class="info-key" value="${key}" onchange="updateGeneral('${key}', this.value, 'key')">
+                    <input type="text" class="info-value" value="${value}" onchange="updateGeneral('${key}', this.value, 'value')">
+                    <button class="btn btn-remove" onclick="removeGeneral('${key}')">🗑️</button>
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        function addMember() {
+            const name = document.getElementById('new-name').value.trim();
+            const spitzname = document.getElementById('new-spitzname').value.trim();
+            const rolle = document.getElementById('new-rolle').value.trim();
+
+            if (!name) {
+                alert('Bitte einen Namen eingeben!');
+                return;
+            }
+
+            guildData.mitglieder[name] = {
+                spitzname: spitzname || '-',
+                rolle: rolle || '-'
+            };
+
+            // Felder leeren
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-spitzname').value = '';
+            document.getElementById('new-rolle').value = '';
+
+            renderMembers();
+        }
+
+        function removeMember(name) {
+            if (confirm(`Möchtest du "${name}" wirklich löschen?`)) {
+                delete guildData.mitglieder[name];
+                renderMembers();
+            }
+        }
+
+        function addInfoToMember(name) {
+            const key = prompt('Name der Info (z.B. "geburtstag", "haustier", "lustige_story"):');
+            if (key) {
+                guildData.mitglieder[name][key] = '';
+                renderMembers();
+            }
+        }
+
+        function updateInfo(name, oldKey, value, type) {
+            if (type === 'key') {
+                const oldValue = guildData.mitglieder[name][oldKey];
+                delete guildData.mitglieder[name][oldKey];
+                guildData.mitglieder[name][value] = oldValue;
+            } else {
+                guildData.mitglieder[name][oldKey] = value;
+            }
+        }
+
+        function removeInfo(name, key) {
+            delete guildData.mitglieder[name][key];
+            renderMembers();
+        }
+
+        function addGeneralInfo() {
+            const key = prompt('Name der Info (z.B. "raidzeiten", "discord", "regel_3"):');
+            if (key) {
+                guildData.allgemeines[key] = '';
+                renderGeneral();
+            }
+        }
+
+        function updateGeneral(oldKey, value, type) {
+            if (type === 'key') {
+                const oldValue = guildData.allgemeines[oldKey];
+                delete guildData.allgemeines[oldKey];
+                guildData.allgemeines[value] = oldValue;
+            } else {
+                guildData.allgemeines[oldKey] = value;
+            }
+        }
+
+        function removeGeneral(key) {
+            delete guildData.allgemeines[key];
+            renderGeneral();
+        }
+
+        function generateJSON() {
+            const json = JSON.stringify(guildData, null, 2);
+            document.getElementById('json-output').textContent = json;
+            document.getElementById('output').classList.add('show');
+            
+            // Automatisch kopieren
+            navigator.clipboard.writeText(json).then(() => {
+                alert('✅ JSON wurde in die Zwischenablage kopiert!\n\nJetzt auf GitHub öffnen und einfügen.');
+            });
+        }
+
+        // Start
+        loadExampleData();
+    </script>
+</body>
+</html>
