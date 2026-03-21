@@ -306,7 +306,7 @@ app.post('/chat', async (req, res) => {
         }
         
         // 0.5 WER HAT DAS HÖCHSTE GS (Priorität vor anderen)
-        else if ((lowerMsg.includes('höchste') || lowerMsg.includes('höchstes')) && 
+        else if ((lowerMsg.includes('hoechste') || lowerMsg.includes('hoechstes') || lowerMsg.includes('höchste') || lowerMsg.includes('höchstes')) && 
                  (lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl'))) {
             
             const top1 = getTopByItemLevel(members, 1);
