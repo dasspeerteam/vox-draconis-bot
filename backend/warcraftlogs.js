@@ -128,7 +128,7 @@ async function getBossRankings(zoneId, bossName = null, metric = 'dps') {
     const variables = {
         zoneId: zoneId,
         guildName: "Vox Draconis",
-        serverName: "alexstrasza",
+        serverName: "Alexstrasza",
         serverRegion: "EU"
     };
 
@@ -169,7 +169,7 @@ async function getGuildReports(limit = 10) {
 
     const variables = {
         guildName: "Vox Draconis",
-        serverName: "alexstrasza",
+        serverName: "Alexstrasza",
         serverRegion: "EU"
     };
 
