@@ -310,25 +310,30 @@ app.post('/chat', async (req, res) => {
         else if ((lowerMsg.includes('hoechste') || lowerMsg.includes('hoechstes') || lowerMsg.includes('höchste') || lowerMsg.includes('höchstes')) && 
                  (lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl'))) {
             
-            // Blizzard API für zuverlässige Item Level Daten
-            console.log('[Blizzard] Frage höchstes GS ab...');
-            const blizzardRoster = await blizzard.getGuildRoster();
-            
-            if (!blizzardRoster.error && blizzardRoster.members && blizzardRoster.members.length > 0) {
-                // Filtere Charaktere mit GS > 0 und sortiere
-                const validMembers = blizzardRoster.members
-                    .filter(m => m.item_level > 0)
-                    .sort((a, b) => b.item_level - a.item_level);
+            try {
+                // Blizzard API für zuverlässige Item Level Daten
+                console.log('[Blizzard] Frage höchstes GS ab...');
+                const blizzardRoster = await blizzard.getGuildRoster();
                 
-                if (validMembers.length > 0) {
-                    const best = validMembers[0];
-                    contextData = `\n\n🏆 HÖCHSTES ITEM LEVEL (Blizzard API):\n`;
-                    contextData += `1. ${best.name} (${best.playable_class}) - GS ${best.item_level}\n\n`;
-                    contextData += `📊 Datenquelle: Blizzard API (${blizzardRoster.member_count} Mitglieder insgesamt)`;
+                if (!blizzardRoster.error && blizzardRoster.members && blizzardRoster.members.length > 0) {
+                    // Filtere Charaktere mit GS > 0 und sortiere
+                    const validMembers = blizzardRoster.members
+                        .filter(m => m.item_level > 0)
+                        .sort((a, b) => b.item_level - a.item_level);
+                    
+                    if (validMembers.length > 0) {
+                        const best = validMembers[0];
+                        contextData = `\n\n🏆 HÖCHSTES ITEM LEVEL (Blizzard API):\n`;
+                        contextData += `1. ${best.name} (${best.playable_class}) - GS ${best.item_level}\n\n`;
+                        contextData += `📊 Datenquelle: Blizzard API (${blizzardRoster.member_count} Mitglieder insgesamt)`;
+                    } else {
+                        contextData = '\n\n⚠️ Keine Item Level Daten in der Blizzard API gefunden.';
+                    }
                 } else {
-                    contextData = '\n\n⚠️ Keine Item Level Daten in der Blizzard API gefunden.';
+                    throw new Error(blizzardRoster.error || 'Keine Mitglieder gefunden');
                 }
-            } else {
+            } catch (error) {
+                console.error('[Blizzard] Fehler:', error.message);
                 // Fallback zu Raider.io
                 const top1 = getTopByItemLevel(members, 1);
                 if (top1.length > 0 && top1[0].item_level > 0) {
