@@ -325,6 +325,20 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
         
+        // 2.5 WER HAT DAS HÖCHSTE GS (einzeln)
+        else if ((lowerMsg.includes('höchste') || lowerMsg.includes('höchstes')) && 
+                 (lowerMsg.includes('gs') || lowerMsg.includes('item level') || lowerMsg.includes('ilvl'))) {
+            
+            const top1 = getTopByItemLevel(members, 1);
+            if (top1.length > 0) {
+                const best = top1[0];
+                contextData = `\n\n🏆 HÖCHSTES ITEM LEVEL:\n1. ${best.name} (${best.class}) - GS ${best.item_level}`;
+            } else {
+                contextData = '\n\nKeine Item Level Daten verfügbar.';
+            }
+            toolUsed = true;
+        }
+        
         // 3. KLASSE NACH M+ SCORE oder ITEM LEVEL
         else if ((lowerMsg.includes('magier') || lowerMsg.includes('mage') || 
                   lowerMsg.includes('krieger') || lowerMsg.includes('warrior') ||
