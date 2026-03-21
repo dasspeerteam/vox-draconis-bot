@@ -3,10 +3,14 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const wcl = require('./warcraftlogs');
 const blizzard = require('./blizzard');
+const sheets = require('./googlesheets');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Google Sheets ID (aus Umgebungsvariable oder fest)
+const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || '1ABC123xyz...'; // TODO: Ersetzen mit echter ID
 
 // API KONFIGURATION
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -665,6 +669,34 @@ app.post('/chat', async (req, res) => {
             toolUsed = true;
         }
 
+        // 11. GOOGLE SHEETS: Spitznamen & Gilden-Wissen
+        // Wenn nach einem Spieler mit Spitzname gefragt wird
+        const sheetData = await sheets.formatGuildContext(GOOGLE_SHEET_ID);
+        if (sheetData && !sheetData.error) {
+            // Prüfe ob nach einem bestimmten Spieler gefragt wurde
+            const allMembers = await sheets.getSheetData(GOOGLE_SHEET_ID, 'Mitglieder');
+            if (!allMembers.error) {
+                for (const member of allMembers) {
+                    if (member.Name && lowerMsg.includes(member.Name.toLowerCase())) {
+                        contextData += `\n\n👤 ${member.Name}:\n`;
+                        if (member.Spitzname) contextData += `Spitzname: "${member.Spitzname}"\n`;
+                        if (member.Rolle) contextData += `Rolle: ${member.Rolle}\n`;
+                        if (member.Notiz) contextData += `Info: ${member.Notiz}\n`;
+                        toolUsed = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Füge generelles Gilden-Wissen hinzu (bei relevanten Fragen)
+            if (lowerMsg.includes('spitzname') || lowerMsg.includes('regel') || 
+                lowerMsg.includes('wer ist') || lowerMsg.includes('was ist') ||
+                lowerMsg.includes('aktuell') || lowerMsg.includes('neu')) {
+                contextData += sheetData;
+                toolUsed = true;
+            }
+        }
+
         // OpenAI Call
         const aiResponse = await fetch(OPENAI_API_URL, {
             method: 'POST',
@@ -739,6 +771,24 @@ app.get('/debug/blizzard/roster', async (req, res) => {
 app.get('/debug/blizzard/char/:name', async (req, res) => {
     const profile = await blizzard.getCharacterProfile(req.params.name);
     res.json(profile);
+});
+
+// Debug: Google Sheets - Mitglieder
+app.get('/debug/sheets/members', async (req, res) => {
+    const data = await sheets.getSheetData(GOOGLE_SHEET_ID, 'Mitglieder');
+    res.json({
+        sheet_id_set: !!GOOGLE_SHEET_ID,
+        data: data
+    });
+});
+
+// Debug: Google Sheets - Gilden-Wissen
+app.get('/debug/sheets/knowledge', async (req, res) => {
+    const data = await sheets.getGuildKnowledge(GOOGLE_SHEET_ID);
+    res.json({
+        sheet_id_set: !!GOOGLE_SHEET_ID,
+        data: data
+    });
 });
 
 // Export für Vercel
