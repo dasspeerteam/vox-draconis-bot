@@ -801,6 +801,20 @@ app.get('/', (req, res) => {
     res.send('Vox Draconis Bot läuft! v3.5 (Warcraft Logs + Raider.io)');
 });
 
+// Chat Widget (oberste Ebene)
+app.get('/chat.html', (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    // chat.html liegt im Root-Verzeichnis (eine Ebene über __dirname)
+    const chatPath = path.join(__dirname, '..', 'chat.html');
+    
+    if (fs.existsSync(chatPath)) {
+        res.sendFile(chatPath);
+    } else {
+        res.status(404).send('chat.html nicht gefunden');
+    }
+});
+
 // Admin Panel
 app.get('/admin', (req, res) => {
     const fs = require('fs');
