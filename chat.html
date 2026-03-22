@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vox Draconis - Gilden Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .chat-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        .chat-area {
+            padding: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot-message {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bot-message strong {
+            color: #ffd700;
+        }
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+        .input-field {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .send-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .loading {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .suggestions {
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .suggestion-chip {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .suggestion-chip:hover {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <h1>🐉 Vox Draconis Bot</h1>
+            <p>Dein Gilden-Assistent für WoW</p>
+        </div>
+        
+        <div class="suggestions">
+            <div class="suggestion-chip" onclick="setQuestion('Was isst Claudius am liebsten?')">Claudius</div>
+            <div class="suggestion-chip" onclick="setQuestion('Wer ist Thomas?')">Thomas</div>
+            <div class="suggestion-chip" onclick="setQuestion('Wann sind Raidzeiten?')">Raidzeiten</div>
+            <div class="suggestion-chip" onclick="setQuestion('Was weißt du über Keshara?')">Keshara</div>
+            <div class="suggestion-chip" onclick="setQuestion('Wer ist Bibi?')">Bibi</div>
+        </div>
+        
+        <div class="chat-area" id="chatArea">
+            <div class="message bot-message">
+                <strong>Willkommen!</strong><br><br>
+                Ich bin der Vox Draconis Bot. Frag mich nach:<br>
+                • Gildenmitgliedern (Thomas, Keshara, Bibi, Claudius...)<br>
+                • Raidzeiten & Regeln<br>
+                • Boss-Taktiken<br>
+                • oder was auch immer dich interessiert!
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" class="input-field" id="messageInput" placeholder="Deine Frage..." onkeypress="handleKeyPress(event)">
+            <button class="send-button" id="sendButton" onclick="sendMessage()">Senden</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/chat';
+        
+        function setQuestion(question) {
+            document.getElementById('messageInput').value = question;
+            document.getElementById('messageInput').focus();
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const button = document.getElementById('sendButton');
+            const chatArea = document.getElementById('chatArea');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // User-Nachricht anzeigen
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-message';
+            userMsg.textContent = message;
+            chatArea.appendChild(userMsg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            // Input leeren und Button deaktivieren
+            input.value = '';
+            button.disabled = true;
+            button.textContent = '...';
+            
+            try {
+                // API-Call
+                const response = await fetch(`${API_URL}?message=${encodeURIComponent(message)}`);
+                const data = await response.json();
+                
+                // Bot-Antwort anzeigen
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot-message';
+                
+                if (data.success) {
+                    botMsg.innerHTML = formatReply(data.reply);
+                } else {
+                    botMsg.className = 'message error';
+                    botMsg.textContent = 'Fehler: ' + (data.error || 'Unbekannter Fehler');
+                }
+                
+                chatArea.appendChild(botMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+                
+            } catch (error) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'message error';
+                errorMsg.textContent = 'Fehler: Konnte nicht mit dem Server verbinden.';
+                chatArea.appendChild(errorMsg);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+            
+            // Button wieder aktivieren
+            button.disabled = false;
+            button.textContent = 'Senden';
+        }
+        
+        function formatReply(text) {
+            // Einfache Formatierung
+            return text.replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+</html>
